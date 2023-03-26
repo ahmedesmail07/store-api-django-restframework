@@ -6,6 +6,7 @@ endpoint = "http://localhost:8000/api/products/1"
 response = requests.get(
     endpoint,
 )
+print(response.json())
 # response = requests.post(
 #     endpoint,
 #     json={
@@ -14,4 +15,3 @@ response = requests.get(
 #         "price": "123",
 #     },
 # )
-print(response.json())
