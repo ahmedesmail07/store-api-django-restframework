@@ -2,9 +2,13 @@ import requests
 
 endpoint = "https://www.facebook.com"  # Url Path
 response = requests.get(endpoint)  # HTTP Get Request
+endpoint_local = "http://127.0.0.1:8000/"
+response_loacl = requests.get(endpoint_local)
 
 print(response.text)  # Print The HTML content of the endpoint that refer to facebook
-
+print(
+    response.text
+)  # Print The HTML content of the endpoint_local that refer to LOCAL HOST
 # API => JSON
 # HTTP REQUEST => HTML
 
