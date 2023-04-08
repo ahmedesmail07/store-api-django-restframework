@@ -1,4 +1,4 @@
-from rest_framework import generics, mixins
+from rest_framework import generics, mixins, permissions, authentication, authtoken
 from .models import Product
 from .serializers import ProductSerializer
 from django.http import HttpResponse
@@ -38,6 +38,8 @@ class ProductCreate(generics.CreateAPIView):
 class ProductListCreate(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    authentication_classes = [authentication.SessionAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
 
 
 class ProductList(generics.ListAPIView):
@@ -51,6 +53,7 @@ class ProductMixinView(
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     lookup_field = "pk"  # this will be used incase of u pass a PK in the endpoint
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
