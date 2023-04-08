@@ -1,4 +1,4 @@
-from rest_framework import generics
+from rest_framework import generics, mixins
 from .models import Product
 from .serializers import ProductSerializer
 from django.http import HttpResponse
@@ -16,6 +16,20 @@ class ProductDetail(generics.RetrieveAPIView):
     # lookup_field => Prodcut.objects.get(pk=#)
 
 
+class ProductDelete(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ProductUpdate(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"
+
+    def perform_update(self, serializer):
+        return super().perform_update(serializer)
+
+
 class ProductCreate(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -24,6 +38,29 @@ class ProductCreate(generics.CreateAPIView):
 class ProductListCreate(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class ProductList(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+
+
+class ProductMixinView(
+    mixins.ListModelMixin, generics.GenericAPIView, mixins.CreateModelMixin
+):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"  # this will be used incase of u pass a PK in the endpoint
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+# This can be used as a GET METHOD
+# GET ALL The products
 
 
 # Define Specific function to do all the above
