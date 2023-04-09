@@ -5,6 +5,8 @@ class TokenAuthentication(BaseTokenAuth):
     keyword = "Bearer"
 
 
+# Just in one line in your command line : python manage.py drf_create_token username
+# Remember replace the username in the above with the ur username
 # OPEN Shell Then do the following to create your token manually
 """
 python manage.py shell 

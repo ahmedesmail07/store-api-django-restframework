@@ -1,14 +1,6 @@
 from rest_framework import permissions
 
 
-"""
-this class is used as a custom permission for the staff users only if they r selected
-by the superuser and they can only make the following in the admin panel : 
-GET || POST || PATCH || DELETE for the product app 
-
-"""
-
-
 class IsStaffEditorPermission(permissions.DjangoModelPermissions):
     perms_map = {
         "GET": ["%(app_label)s.view_%(model_name)s"],

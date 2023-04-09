@@ -8,30 +8,32 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.http import Http404
 from api.authentication import TokenAuthentication
+from api.mixins import StaffEditorPermissionMixin
 
 
 class ProductDetail(generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    lookup_field = "pk"
     # Detail View -> Single Product Detail -> PK
     # lookup_field = "pk"
     # lookup_field => Prodcut.objects.get(pk=#)
 
 
-class ProductDelete(generics.DestroyAPIView):
+class ProductDelete(StaffEditorPermissionMixin, generics.DestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
+    # permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
 
 
-# class ProductUpdate(generics.UpdateAPIView):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
-#     lookup_field = "pk"
-#     permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
+class ProductUpdate(StaffEditorPermissionMixin, generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"
+    # permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
 
-#     def perform_update(self, serializer):
-#         return super().perform_update(serializer)
+    def perform_update(self, serializer):
+        return super().perform_update(serializer)
 
 
 # class ProductCreate(generics.CreateAPIView):
@@ -40,7 +42,7 @@ class ProductDelete(generics.DestroyAPIView):
 #     permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
 
 
-class ProductListCreate(generics.ListCreateAPIView):
+class ProductListCreate(StaffEditorPermissionMixin, generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [
@@ -48,7 +50,10 @@ class ProductListCreate(generics.ListCreateAPIView):
         authentication.TokenAuthentication,
     ]
     # permission_classes = [permissions.IsAuthenticated]
-    permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
+    """
+    Since using (StaffEditorPermissionMixin) there is no need for our permission classes
+    """
+    # permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
 
 
 # class ProductList(generics.ListAPIView):
