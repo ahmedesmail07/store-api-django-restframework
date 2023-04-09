@@ -7,6 +7,6 @@ urlpatterns = [
     path("<int:pk>/update/", views.ProductUpdate.as_view()),
     path("create/", views.ProductCreate.as_view()),
     path("create-list/", views.ProductListCreate.as_view()),
-    path("list/", views.ProductList.as_view()),
+    # path("list/", views.ProductList.as_view()),
     path("", views.ProductMixinView.as_view()),
 ]
