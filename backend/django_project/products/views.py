@@ -49,6 +49,16 @@ class ProductListCreate(StaffEditorPermissionMixin, generics.ListCreateAPIView):
         authentication.SessionAuthentication,
         authentication.TokenAuthentication,
     ]
+
+    def perform_create(self, serializer):
+        email = serializer.validated_data.pop("email")
+        print(email)
+        title = serializer.validated_data.get("title")
+        content = serializer.validated_data.get("content")
+        if content is None:
+            content = title
+        serializer.save(content=content)
+
     # permission_classes = [permissions.IsAuthenticated]
     """
     Since using (StaffEditorPermissionMixin) there is no need for our permission classes
