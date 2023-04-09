@@ -4,6 +4,10 @@ from .serializers import ProductSerializer
 
 
 class ProductViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    lookup_field = "pk"
+
     """
     ModelViewSet >>>>
     This ViewSet can do the following HTTP VERPS :
@@ -13,7 +17,3 @@ class ProductViewSet(viewsets.ModelViewSet):
     DELETE => Delete The Current post
 
     """
-
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    lookup_field = "pk"
