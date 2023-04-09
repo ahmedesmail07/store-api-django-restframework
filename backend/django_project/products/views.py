@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.http import Http404
+from api.authentication import TokenAuthentication
 
 
 class ProductDetail(generics.RetrieveAPIView):
@@ -42,7 +43,10 @@ class ProductDelete(generics.DestroyAPIView):
 class ProductListCreate(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [
+        authentication.SessionAuthentication,
+        authentication.TokenAuthentication,
+    ]
     # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
 

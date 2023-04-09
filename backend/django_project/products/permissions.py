@@ -33,5 +33,5 @@ class IsStaffEditorPermission(permissions.DjangoModelPermissions):
     #             return True
     #     return False
 
-    def has_object_permission(self, request, view, obj):
-        return obj.owner == request.user
+    # def has_object_permission(self, request, view, obj):
+    #     return obj.owner == request.user
