@@ -20,4 +20,4 @@ def validate_title_no_title_word(value):
     return value
 
 
-unique_prodcut_title = UniqueValidator(queryset=Product.objects.all())
+unique_prodcut_title = UniqueValidator(queryset=Product.objects.all(), lookup="iexact")

@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from django.http import Http404
 from api.authentication import TokenAuthentication
-from api.mixins import StaffEditorPermissionMixin
+from api.mixins import StaffEditorPermissionMixin, UserQuerySetMixin
 
 
 class ProductDetail(generics.RetrieveAPIView):
@@ -42,7 +42,9 @@ class ProductUpdate(StaffEditorPermissionMixin, generics.UpdateAPIView):
 #     permission_classes = [IsStaffEditorPermission]  # Our Custom Permission
 
 
-class ProductListCreate(StaffEditorPermissionMixin, generics.ListCreateAPIView):
+class ProductListCreate(
+    UserQuerySetMixin, StaffEditorPermissionMixin, generics.ListCreateAPIView
+):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     authentication_classes = [
@@ -51,13 +53,21 @@ class ProductListCreate(StaffEditorPermissionMixin, generics.ListCreateAPIView):
     ]
 
     def perform_create(self, serializer):
-        email = serializer.validated_data.pop("email")
-        print(email)
+        # email = serializer.validated_data.pop("email")
+        # print(email)
         title = serializer.validated_data.get("title")
         content = serializer.validated_data.get("content")
         if content is None:
             content = title
-        serializer.save(content=content)
+        serializer.save(user=self.request.user, content=content)
+
+    # def get_queryset(self, *args, **kwargs):
+    #     qs = super().get_queryset(*args, **kwargs)
+    #     request = self.request
+    #     user = request.user
+    #     if not user.is_authenticated:
+    #         return Product.objects.none()
+    #     return qs.filter(user=request.user)
 
     # permission_classes = [permissions.IsAuthenticated]
     """

@@ -18,7 +18,7 @@ class ProductSerializer(serializers.ModelSerializer):
     edit_url = serializers.HyperlinkedIdentityField(
         view_name="product-update", lookup_field="pk"
     )
-    email = serializers.EmailField(write_only=True)
+    # email = serializers.EmailField(write_only=True)
     title = serializers.CharField(
         validators=[validate_title, validate_title_no_title_word, unique_prodcut_title]
     )
@@ -28,6 +28,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
+            # "user",
             "url",
             "pk",
             "title",
@@ -37,13 +38,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "sale_price",
             "delete_url",
             "edit_url",
-            "email",
+            # "email",
         ]
 
     def validate_title(self, value):
-        request = self.context.get("request")
-        user = request.user
-        queryset = Product.objects.filter(user=user, title__iexact=value)
+        queryset = Product.objects.filter(title__iexact=value)
         if queryset.exists():
             raise serializers.ValidationError(
                 f"This {value} is already exists as a title of another product"
