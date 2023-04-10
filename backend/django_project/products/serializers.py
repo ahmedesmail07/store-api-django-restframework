@@ -1,6 +1,11 @@
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Product
+from .validators import (
+    validate_title,
+    validate_title_no_title_word,
+    unique_prodcut_title,
+)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -14,13 +19,19 @@ class ProductSerializer(serializers.ModelSerializer):
         view_name="product-update", lookup_field="pk"
     )
     email = serializers.EmailField(write_only=True)
+    title = serializers.CharField(
+        validators=[validate_title, validate_title_no_title_word, unique_prodcut_title]
+    )
 
+    # fake_title = serializers.CharField(source="title", read_only=True)
+    # Or u can inhreite from the Forienkey >= user.email
     class Meta:
         model = Product
         fields = [
             "url",
             "pk",
             "title",
+            # "fake_title",
             "content",
             "price",
             "sale_price",
@@ -28,6 +39,16 @@ class ProductSerializer(serializers.ModelSerializer):
             "edit_url",
             "email",
         ]
+
+    def validate_title(self, value):
+        request = self.context.get("request")
+        user = request.user
+        queryset = Product.objects.filter(user=user, title__iexact=value)
+        if queryset.exists():
+            raise serializers.ValidationError(
+                f"This {value} is already exists as a title of another product"
+            )
+        return value
 
     def create(self, validated_data):
         obj = super().create(validated_data)
