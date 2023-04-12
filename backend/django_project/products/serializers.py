@@ -19,12 +19,6 @@ class ProductInlineSerialzer(serializers.Serializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     owner = UserPublicSerializer(source='user', read_only=True)
-    related_products = ProductInlineSerialzer(
-        source = 'user.product_set.all',
-        read_only=True,
-        many = True #many is always assicoated with QS
-        )
-    my_user_data = serializers.SerializerMethodField(read_only=True)
     url = serializers.HyperlinkedIdentityField(
         view_name="product-detail", lookup_field="pk"
     )
@@ -49,16 +43,11 @@ class ProductSerializer(serializers.ModelSerializer):
             "url",
             "pk",
             "title",
-            # "fake_title",
             "content",
             "price",
             "sale_price",
             "delete_url",
             "edit_url",
-            # "email",
-            "my_user_data",
-            "related_products",
-
         ]
 
     def get_my_user_data(self, obj):
