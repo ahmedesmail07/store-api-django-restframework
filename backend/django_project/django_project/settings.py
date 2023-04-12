@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     # LOCAL APPS
     "api",
     "products",
+    "search"
 ]
 
 MIDDLEWARE = [
