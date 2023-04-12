@@ -1,3 +1,4 @@
+from tkinter.tix import Tree
 from rest_framework import serializers
 from rest_framework.reverse import reverse
 from .models import Product
@@ -6,9 +7,24 @@ from .validators import (
     validate_title_no_title_word,
     unique_prodcut_title,
 )
+from api.serializers import UserPublicSerializer
+
+
+class ProductInlineSerialzer(serializers.Serializer):
+    url = serializers.HyperlinkedIdentityField(
+        view_name="product-detail", lookup_field="pk", read_only=True
+    )
+    title = serializers.CharField(read_only=True)
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    owner = UserPublicSerializer(source='user', read_only=True)
+    related_products = ProductInlineSerialzer(
+        source = 'user.product_set.all',
+        read_only=True,
+        many = True #many is always assicoated with QS
+        )
+    my_user_data = serializers.SerializerMethodField(read_only=True)
     url = serializers.HyperlinkedIdentityField(
         view_name="product-detail", lookup_field="pk"
     )
@@ -20,7 +36,8 @@ class ProductSerializer(serializers.ModelSerializer):
     )
     # email = serializers.EmailField(write_only=True)
     title = serializers.CharField(
-        validators=[validate_title, validate_title_no_title_word, unique_prodcut_title]
+        validators=[validate_title,
+                    validate_title_no_title_word, unique_prodcut_title]
     )
 
     # fake_title = serializers.CharField(source="title", read_only=True)
@@ -28,7 +45,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
-            # "user",
+            "owner",
             "url",
             "pk",
             "title",
@@ -39,7 +56,13 @@ class ProductSerializer(serializers.ModelSerializer):
             "delete_url",
             "edit_url",
             # "email",
+            "my_user_data",
+            "related_products",
+
         ]
+
+    def get_my_user_data(self, obj):
+        return {"username": obj.user.username}
 
     def validate_title(self, value):
         queryset = Product.objects.filter(title__iexact=value)
